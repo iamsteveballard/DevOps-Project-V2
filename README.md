@@ -2,10 +2,10 @@
 
 ## What does it do?
 
-Version 2 of my AWS Cloudformation project. 
-
 See version 1 here:
 https://github.com/iamsteveballard/DevOps-Project
+
+Version 2 of my AWS Cloudformation project. 
 
 Uses AWS Cloudformation to build and deploy a React App to an S3 bucket and served with a Cloudfront Origin Access Identity. 
 
