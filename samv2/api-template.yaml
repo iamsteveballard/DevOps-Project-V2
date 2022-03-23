@@ -1,0 +1,190 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: AWS SAM template with a simple API definition
+
+Globals:
+  Api:
+    OpenApiVersion: 3.0.1
+
+Parameters:
+  YourEmail:
+    Type: String
+    Default: ballard@mailinator.com
+  YourUsername:
+    Type: String
+    Default: steve
+
+Resources:
+
+  # Create Bucket for app to store images
+  ImagesStoreBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      CorsConfiguration:
+        CorsRules:
+          - AllowedMethods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+            AllowedOrigins:
+              - "*"
+
+  # Create ApiGateway and connect to Cognito Authorizer
+  ApiGatewayApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: dev
+      Auth:
+        DefaultAuthorizer: MyCognitoAuthorizer
+        Authorizers:
+          MyCognitoAuthorizer:
+            UserPoolArn: 
+              - !GetAtt UserPool.Arn
+        AddDefaultAuthorizerToCorsPreflight: false
+      # Include the swagger file for more detailed configuration
+      DefinitionBody:
+        'Fn::Transform':
+          Name: 'AWS::Include'
+          Parameters:
+            Location: swagger-apigateway.yaml
+
+  # Lambda function to generate presigned post urls for app to upload images
+  ApiPOSTFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Events:
+        ApiEvent:
+          Type: Api
+          Properties:
+            Path: /
+            Method: POST
+            RestApiId:
+              Ref: ApiGatewayApi
+      Runtime: python3.8
+      Handler: upload-image.lambda_handler
+      Policies:
+        - AmazonS3FullAccess
+      Environment:
+        Variables:
+          IMAGES_BUCKET: !Ref ImagesStoreBucket
+  
+  # Lambda function to return a list of presigned image links to view images in app
+  ApiGETFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Events:
+        ApiEvent:
+          Type: Api
+          Properties:
+            Path: /
+            Method: GET
+            RestApiId:
+              Ref: ApiGatewayApi
+      Runtime: python3.8
+      Handler: get-images.lambda_handler
+      Policies:
+        - AmazonS3FullAccess
+        - AmazonDynamoDBFullAccess
+      Environment:
+        Variables:
+          IMAGES_BUCKET: !Ref ImagesStoreBucket
+
+  # Lambda function to run image recognition function
+  # Triggered by event source mapping when image is uploaded to s3 bucket
+  RekogFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Events:
+        ProcessImageEvent:
+          Type: S3
+          Properties:
+            Bucket: !Ref ImagesStoreBucket
+            Events: s3:ObjectCreated:*
+      Runtime: python3.8
+      Handler: rekog-app.lambda_handler
+      Policies:
+        - AmazonS3FullAccess
+        - AmazonDynamoDBFullAccess
+        - AmazonRekognitionFullAccess
+
+  # Create Cognito User Pool for authentication
+  UserPool:
+    Type: AWS::Cognito::UserPool
+    Properties:
+      AdminCreateUserConfig:
+        AllowAdminCreateUserOnly: false
+      UserPoolName: TestingUsers
+      AliasAttributes: 
+        - preferred_username
+        - email
+      AutoVerifiedAttributes:
+        - email
+      Policies:
+        PasswordPolicy:
+          MinimumLength: 6
+          RequireLowercase: false
+          RequireNumbers: false
+          RequireSymbols: false
+          RequireUppercase: false
+
+  # Cognito client ID for connecting to pool
+  UserPoolTokenClient:
+    Type: AWS::Cognito::UserPoolClient
+    Properties:
+      UserPoolId: !Ref UserPool
+      GenerateSecret: false
+      ExplicitAuthFlows:
+      - USER_PASSWORD_AUTH
+
+  # Cognito pool ID to connecting to pool
+  UserPoolUser:
+    Type: AWS::Cognito::UserPoolUser
+    Properties:
+      DesiredDeliveryMediums:
+        - EMAIL
+      Username: !Ref YourUsername
+      UserPoolId: !Ref UserPool
+      UserAttributes:
+      - Name: email
+        Value: !Ref YourEmail
+      - Name: name
+        Value: !Ref YourUsername 
+
+  # DynamoDB table for storing image recognition data
+  ImagesTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: "images-v2"
+      AttributeDefinitions:
+        - AttributeName: "user"
+          AttributeType: "S"
+        - AttributeName: "s3_key"
+          AttributeType: "S"
+      KeySchema:
+        - AttributeName: "user"
+          KeyType: "HASH"
+        - AttributeName: "s3_key"
+          KeyType: "RANGE"
+      ProvisionedThroughput: 
+        ReadCapacityUnits: "1"
+        WriteCapacityUnits: "1"
+
+# Export variables to use in later functions
+Outputs:
+  CognitoIDv2:
+    Description: The Cognito UserPool ID
+    Value: !Ref UserPool
+    Export:
+      Name: CognitoIDv2
+  CognitoClientIDv2:
+    Description: The Cognito UserPool Client ID
+    Value: !Ref UserPoolTokenClient
+    Export:
+      Name: CognitoClientIDv2
+  APIurlv2:
+    Description: URL to point to api gateway
+    Value: 
+      Fn::Sub: https://${ApiGatewayApi}.execute-api.${AWS::Region}.amazonaws.com/dev/
+    Export:
+      Name: APIurlv2

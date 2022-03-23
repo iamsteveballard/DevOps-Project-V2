@@ -1,0 +1,180 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: AWS SAM template with a simple API definition
+Globals:
+  Api:
+    OpenApiVersion: 3.0.1
+Parameters:
+  YourEmail:
+    Type: String
+    Default: ballard@mailinator.com
+  YourUsername:
+    Type: String
+    Default: steve
+Resources:
+  ImagesStoreBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      CorsConfiguration:
+        CorsRules:
+        - AllowedMethods:
+          - GET
+          - POST
+          - PUT
+          - DELETE
+          AllowedOrigins:
+          - '*'
+  ApiGatewayApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: dev
+      Auth:
+        DefaultAuthorizer: MyCognitoAuthorizer
+        Authorizers:
+          MyCognitoAuthorizer:
+            UserPoolArn:
+            - Fn::GetAtt:
+              - UserPool
+              - Arn
+        AddDefaultAuthorizerToCorsPreflight: false
+      DefinitionBody:
+        Fn::Transform:
+          Name: AWS::Include
+          Parameters:
+            Location: s3://devops-project-steve-v2/eab945ccd8bf2372c8e0584612225720
+  ApiPOSTFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Events:
+        ApiEvent:
+          Type: Api
+          Properties:
+            Path: /
+            Method: POST
+            RestApiId:
+              Ref: ApiGatewayApi
+      Runtime: python3.8
+      Handler: upload-image.lambda_handler
+      Policies:
+      - AmazonS3FullAccess
+      Environment:
+        Variables:
+          IMAGES_BUCKET:
+            Ref: ImagesStoreBucket
+      CodeUri: s3://devops-project-steve-v2/2619777635ac2eb04a80cdb798efdcf2
+  ApiGETFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Events:
+        ApiEvent:
+          Type: Api
+          Properties:
+            Path: /
+            Method: GET
+            RestApiId:
+              Ref: ApiGatewayApi
+      Runtime: python3.8
+      Handler: get-images.lambda_handler
+      Policies:
+      - AmazonS3FullAccess
+      - AmazonDynamoDBFullAccess
+      Environment:
+        Variables:
+          IMAGES_BUCKET:
+            Ref: ImagesStoreBucket
+      CodeUri: s3://devops-project-steve-v2/2619777635ac2eb04a80cdb798efdcf2
+  RekogFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Events:
+        ProcessImageEvent:
+          Type: S3
+          Properties:
+            Bucket:
+              Ref: ImagesStoreBucket
+            Events: s3:ObjectCreated:*
+      Runtime: python3.8
+      Handler: rekog-app.lambda_handler
+      Policies:
+      - AmazonS3FullAccess
+      - AmazonDynamoDBFullAccess
+      - AmazonRekognitionFullAccess
+      CodeUri: s3://devops-project-steve-v2/2619777635ac2eb04a80cdb798efdcf2
+  UserPool:
+    Type: AWS::Cognito::UserPool
+    Properties:
+      AdminCreateUserConfig:
+        AllowAdminCreateUserOnly: false
+      UserPoolName: TestingUsers
+      AliasAttributes:
+      - preferred_username
+      - email
+      AutoVerifiedAttributes:
+      - email
+      Policies:
+        PasswordPolicy:
+          MinimumLength: 6
+          RequireLowercase: false
+          RequireNumbers: false
+          RequireSymbols: false
+          RequireUppercase: false
+  UserPoolTokenClient:
+    Type: AWS::Cognito::UserPoolClient
+    Properties:
+      UserPoolId:
+        Ref: UserPool
+      GenerateSecret: false
+      ExplicitAuthFlows:
+      - USER_PASSWORD_AUTH
+  UserPoolUser:
+    Type: AWS::Cognito::UserPoolUser
+    Properties:
+      DesiredDeliveryMediums:
+      - EMAIL
+      Username:
+        Ref: YourUsername
+      UserPoolId:
+        Ref: UserPool
+      UserAttributes:
+      - Name: email
+        Value:
+          Ref: YourEmail
+      - Name: name
+        Value:
+          Ref: YourUsername
+  ImagesTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: images-v2
+      AttributeDefinitions:
+      - AttributeName: user
+        AttributeType: S
+      - AttributeName: s3_key
+        AttributeType: S
+      KeySchema:
+      - AttributeName: user
+        KeyType: HASH
+      - AttributeName: s3_key
+        KeyType: RANGE
+      ProvisionedThroughput:
+        ReadCapacityUnits: '1'
+        WriteCapacityUnits: '1'
+Outputs:
+  CognitoIDv2:
+    Description: The Cognito UserPool ID
+    Value:
+      Ref: UserPool
+    Export:
+      Name: CognitoIDv2
+  CognitoClientIDv2:
+    Description: The Cognito UserPool Client ID
+    Value:
+      Ref: UserPoolTokenClient
+    Export:
+      Name: CognitoClientIDv2
+  APIurlv2:
+    Description: URL to point to api gateway
+    Value:
+      Fn::Sub: https://${ApiGatewayApi}.execute-api.${AWS::Region}.amazonaws.com/dev/
+    Export:
+      Name: APIurlv2

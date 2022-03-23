@@ -1,0 +1,42 @@
+version: 0.2
+
+phases: 
+    install:
+        runtime-versions:
+            nodejs: 14
+        commands:
+            - echo "installing"
+            - cd devops-project-react-app
+            - npm install amazon-cognito-identity-js
+    pre_build:
+        commands: 
+            - echo "we are in the pre build phase"
+            - echo "UserID:"${COGNITO_ID}
+            - echo "ClientID:"$COGNITO_CLIENT_ID
+            - echo "API_URL:"$API_URL
+            - echo REACT_APP_.AWS_COGNITO_ID=$COGNITO_ID > .env
+            - echo REACT_APP_.AWS_COGNITO_CLIENT_ID=$COGNITO_CLIENT_ID >> .env
+            - echo REACT_APP_.AWS_API_URL=$API_URL >> .env
+            - ls
+            - cat .env
+            - cat src/UserPool.js
+            - cat src/components/Lambda.js
+            - npm install
+    build:
+        commands:
+            - echo "Build react app"
+            - npm run build
+    post_build:
+        commands:
+            - echo "we are in the post build phase"
+            - cd build
+            - ls
+            - cat index.html
+            - cd ../..
+            - ls
+artifacts:
+  files:
+    - '**/*'
+  base-directory: 'devops-project-react-app/build'
+
+            
