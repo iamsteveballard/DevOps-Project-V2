@@ -23,9 +23,8 @@ TBD
 
 Version 2 Live Demo:
 
-```
 https://d3smd0g91sm2b2.cloudfront.net/
-```
+
 
 ## Prerequisites: 
 
