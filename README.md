@@ -2,9 +2,9 @@
 
 See version 1 here:
 
-## What does it do?
-
 https://github.com/iamsteveballard/DevOps-Project
+
+## What does it do?
 
 Version 2 of my AWS Cloudformation project. 
 
