@@ -20,7 +20,6 @@ phases:
             - ls
             - cat .env
             - cat src/UserPool.js
-            - cat src/components/Lambda.js
             - npm install
     build:
         commands:
