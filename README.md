@@ -1,12 +1,25 @@
-# DevOps-Project
+# DevOps-Project-V2
 
 ## What does it do?
 
-Uses AWS Cloudformation to build and deploy a React App to a single EC2 Instance and connects it to API Gateway, Cognito, and a Lambda function. 
+Version 2 of my AWS Cloudformation project. 
 
-Video walkthrough:
+See version 1 here:
+https://github.com/iamsteveballard/DevOps-Project
+
+Uses AWS Cloudformation to build and deploy a React App to an S3 bucket with a Cloudfront Origin Access Identity. 
+
+Serverless set up with API Gateway, Cognito, and Lambda functions. 
+
+User can login and upload photos and app will run an image recognition function to identify objects in the image. 
+
+Version 1 video walkthrough and installation instructions:
 
 https://www.youtube.com/watch?v=RAxxRytInzo
+
+Version 2 video walkthrough and code review:
+
+TBD
 
 ## Prerequisites: 
 
@@ -27,14 +40,14 @@ aws configure
 ## Step 1: Clone Repository
 
 ```
-git clone https://github.com/iamsteveballard/DevOps-Project.git
+git clone https://github.com/iamsteveballard/DevOps-Project-V2.git
 ```
 
 ## Step 2: Create a new CodeCommit Repository
 
 ``` 
-cd DevOps-Project
-aws cloudformation deploy --template-file create-repo.yml --stack-name create-repo
+cd DevOps-Project-V2
+aws cloudformation deploy --template-file create-repo-v2.yml --stack-name create-repo-v2
 ```
 
 ## Step 3: Add new CodeCommit Repo as a remote branch
@@ -58,7 +71,7 @@ git push cc main
 
 ## Step 5: Run CloudFormation commands
 
-Then run launch.sh bash script. Will take a while, head to the AWS CloudFormation console to follow along with the progress.
+Then run launch-v2.sh bash script. Will take a while, head to the AWS CloudFormation console to follow along with the progress.
 ```
-bash launch.sh
+bash launch-v2.sh
 ```
