@@ -1,8 +1,9 @@
 # DevOps-Project-V2
 
+See version 1 here:
+
 ## What does it do?
 
-See version 1 here:
 https://github.com/iamsteveballard/DevOps-Project
 
 Version 2 of my AWS Cloudformation project. 
