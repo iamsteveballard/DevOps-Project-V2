@@ -7,9 +7,9 @@ Version 2 of my AWS Cloudformation project.
 See version 1 here:
 https://github.com/iamsteveballard/DevOps-Project
 
-Uses AWS Cloudformation to build and deploy a React App to an S3 bucket with a Cloudfront Origin Access Identity. 
+Uses AWS Cloudformation to build and deploy a React App to an S3 bucket and served with a Cloudfront Origin Access Identity. 
 
-Serverless set up with API Gateway, Cognito, and Lambda functions. 
+Serverless set up with API Gateway, Cognito, DynamoDB and Lambda. 
 
 User can login and upload photos and app will run an image recognition function to identify objects in the image. 
 

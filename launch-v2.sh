@@ -16,7 +16,6 @@ aws cloudformation package --s3-bucket $s3bucketname --template-file samv2/api-t
 
 aws cloudformation deploy --template-file samv2/gen/template-generated.yaml --stack-name Serverless-Apps-v2 --capabilities CAPABILITY_IAM
 
+aws cloudformation deploy --template-file create-repo-v2.yml --stack-name create-repo-v2
 
-# aws cloudformation deploy --template-file create-repo-v2.yml --stack-name create-repo-v2
-
-# aws cloudformation deploy --template-file pipeline-v2.yaml --stack-name CICD-Pipeline-v2 --capabilities CAPABILITY_IAM
+aws cloudformation deploy --template-file pipeline-v2.yaml --stack-name CICD-Pipeline-v2 --capabilities CAPABILITY_IAM
