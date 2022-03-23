@@ -1,8 +1,6 @@
 # DevOps-Project-V2
 
-See version 1 here:
-
-https://github.com/iamsteveballard/DevOps-Project
+See version 1 here: https://github.com/iamsteveballard/DevOps-Project
 
 ## What does it do?
 
