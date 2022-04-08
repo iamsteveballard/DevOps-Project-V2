@@ -26,6 +26,7 @@ const UploadImage = () => {
 
     const getUrl = async(event) => {
         event.preventDefault()
+        console.log("jwtToken1:", jwtToken)
         const res = await axios({
             method: "POST",
              url: process.env["REACT_APP_.AWS_API_URL"],
