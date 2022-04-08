@@ -54,6 +54,8 @@ const Account = (props) => {
     
             user.authenticateUser(authDetails, {
                 onSuccess: (data) => {
+                    console.log("jwtToken", data.idToken.jwtToken)
+                    console.log("idToken", data.idToken)
                     setLoggedIn(true)
                     setMessage("Logged in")
                     resolve(data)
