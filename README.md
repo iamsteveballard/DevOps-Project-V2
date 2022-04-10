@@ -18,7 +18,7 @@ https://www.youtube.com/watch?v=RAxxRytInzo
 
 Version 2 video walkthrough and code review:
 
-TBD
+https://www.youtube.com/watch?v=r74_s-Da8RM
 
 Version 2 Live Demo:
 

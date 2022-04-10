@@ -19,7 +19,6 @@ def lambda_handler(event, context):
     decoded_username = json.loads(decoded_payload)['cognito:username']
     
     try:
-        filename=json.loads(event['body'])['filename']
         
         # Which s3 bucket to look in
         bucket_name = os.environ['IMAGES_BUCKET']
