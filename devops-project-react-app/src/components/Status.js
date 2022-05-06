@@ -18,21 +18,19 @@ const Status = () => {
     <div>
       {loggedIn ? (
         <div>
-          <p>Welcome {username}!</p>
-          <div>
-            <button onClick={logout}>Logout</button>
-          </div>
+          Welcome {username}!<br></br>
+          <button onClick={logout}>Logout</button>
           <p>Here’s how it works: </p>
-          <div style={{ width: "75%", margin: "auto", fontSize: ".8em"}}>
-          <p>
-            You upload an image and the objects in the image get recognized. The
-            picture and the labels are saved for about a week. There is a limit
-            of 10 images per account so if it’s full just make your own account
-            and try it out yourself!
-          </p>
-          <p>
-            Watch this video for an explanation of the tech behind this site:
-          </p>
+          <div style={{ width: "75%", margin: "auto", fontSize: ".8em" }}>
+            <p>
+              You upload an image and the objects in the image get recognized.
+              The picture and the labels are saved for about a week. There is a
+              limit of 10 images per account so if it’s full just make your own
+              account and try it out yourself!
+            </p>
+            <p>
+              Watch this video for an explanation of the tech behind this site:
+            </p>
           </div>
           <a
             href="https://www.youtube.com/watch?v=r74_s-Da8RM"
