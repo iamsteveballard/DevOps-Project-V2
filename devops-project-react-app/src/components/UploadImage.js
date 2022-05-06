@@ -80,7 +80,7 @@ const UploadImage = () => {
                 <div>
                 <img alt="not found" width={"250px"} src={URL.createObjectURL(image)} />
                 <br />
-                <button onClick={()=>{setImage(null);setMessage('')}}>Remove</button>                
+                <button onClick={()=>{setImage(null);setMessage('')}}>Remove Preview</button>                
                 </div>
                 )  
             }
@@ -106,13 +106,13 @@ const UploadImage = () => {
                             
                         }}
                     />
-                    <button type="submit">Send to s3</button>
+                    <button type="submit">Send to S3</button>
                 </form>
             }
             {loggedIn && (
                 <div style ={{ maxWidth:1000, overflow: 'wrap' }}>
                 <br />
-                <button onClick={getImages}>Get Images</button> 
+                <button onClick={getImages}>Refresh Uploaded Images</button> 
                 <ul style={{ listStyleType:'none' }}>
                     {Object.entries(imageList).map((x)=>{
                         return <li key={x[0]}><img alt={x[0]} width={"250px"} src={x[1]['s3_link']} />{
