@@ -24,7 +24,7 @@ def lambda_handler(event, context):
     label_list = {}
     for label in response['Labels']:
         print(label['Name'])
-        label_list[label['Name']] = str(label['Confidence'])
+        label_list[label['Name']] = str(round(label['Confidence'], 4))
                 
     # Log the data for debugging            
     print('dynamo item')
