@@ -15,13 +15,13 @@ const Status = () => {
   } = useContext(AccountContext);
 
   return (
-    <div>
+    <div style={{maxWidth: "800px" }}>
       {loggedIn ? (
-        <div>
+        <div >
           Welcome {username}!<br></br>
           <button onClick={logout}>Logout</button>
           <p>Here’s how it works: </p>
-          <div style={{ width: "75%", margin: "auto", fontSize: ".8em" }}>
+          <div style={{ fontSize: ".8em" }}>
             <p>
               You upload an image and the objects in the image get recognized.
               The picture and the labels are saved for about a week. There is a
@@ -40,7 +40,7 @@ const Status = () => {
           </a>
         </div>
       ) : (
-        <div style={{ width: "75%", margin: "auto" }}>
+        <div >
           <h1>Looking to hire a hard working dev?</h1>
 
           <p>
