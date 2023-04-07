@@ -41,7 +41,7 @@ const Status = () => {
         </div>
       ) : (
         <div >
-          <h1>Looking to hire a hard working dev?</h1>
+          <h1>Looking to hire a hard working DevOps Engineer?</h1>
 
           <p>
             Look no further, because you’ve found the DevOps project of Steve
